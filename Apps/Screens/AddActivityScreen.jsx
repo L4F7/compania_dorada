@@ -8,6 +8,8 @@ import {
   ToastAndroid,
   Alert,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  ScrollView,
 } from 'react-native';
 import { Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
@@ -57,7 +59,7 @@ export default function AddActivity() {
     }
   };
 
-  const onSubmitMethod = async (value) => {
+  const onSubmitMethod = async (value, resetForm) => {
     setUploading(true);
 
     // Converts the URI into a Blob file
@@ -75,143 +77,150 @@ export default function AddActivity() {
           value.userName = user.fullName;
           value.userEmail = user.primaryEmailAddress.emailAddress;
           value.userImage = user.imageUrl;
+          value.createdAt = new Date().toISOString();
 
           const docRef = await addDoc(collection(db, 'UserPost'), value);
           if (docRef.id) {
             setUploading(false);
             Alert.alert('Actividad agregada exitosamente');
+            resetForm();
+            setImage(null);
           }
         });
       });
   };
 
   return (
-    <View className="p-10">
-      <Text className="text-[27px] font-bold mt-5">Agregar Actividad</Text>
-      <Text className="text-[17px] text-gray-500 mb-3">
-        Llena los campos para agregar una actividad
-      </Text>
-      <Formik
-        initialValues={{
-          title: '',
-          description: '',
-          category: '',
-          // date: '',
-          // time: '',
-          location: '',
-          image: '',
-          userName: '',
-          userEmail: '',
-        }}
-        onSubmit={(value) => onSubmitMethod(value)}
-        // validate={(values) => {
-        //   const errors = {};
-        //   if (!values.title) {
-        //     ToastAndroid.show('Titulo no presente', ToastAndroid.SHORT);
-        //     errors.title = 'Requerido';
-        //   }
-        //   if (!values.description) {
-        //     ToastAndroid.show('Descripción no presente', ToastAndroid.SHORT);
-        //     errors.description = 'Requerido';
-        //   }
-        //   if (!values.category) {
-        //     ToastAndroid.show('Categoría no presente', ToastAndroid.SHORT);
-        //     errors.category = 'Requerido';
-        //   }
-        //   if (!values.location) {
-        //     ToastAndroid.show('Ubicación no presente', ToastAndroid.SHORT);
-        //     errors.location = 'Requerido';
-        //   }
-        //   return errors;
-        // }}
-      >
-        {({
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          setFieldValue,
-          values,
-          //errors,
-        }) => (
-          <View>
-            <TouchableOpacity onPress={pickImage}>
-              {image ? (
-                <Image
-                  source={{ uri: image }}
-                  style={{
-                    width: 150,
-                    height: 150,
-                    borderRadius: 10,
-                    alignSelf: 'center',
-                  }}
-                />
-              ) : (
-                <Image
-                  source={require('../../assets/images/image_placeholder.jpg')}
-                  style={{
-                    width: 150,
-                    height: 150,
-                    borderRadius: 10,
-                    alignSelf: 'center',
-                  }}
-                />
-              )}
-            </TouchableOpacity>
-            <TextInput
-              style={styles.input}
-              placeholder="Titulo"
-              value={values?.title}
-              onChangeText={handleChange('title')}
-            ></TextInput>
-            <TextInput
-              style={styles.input}
-              placeholder="Descripción"
-              value={values?.description}
-              numberOfLines={5}
-              onChangeText={handleChange('description')}
-            ></TextInput>
-            <TextInput
-              style={styles.input}
-              placeholder="Ubicación"
-              value={values?.location}
-              onChangeText={handleChange('location')}
-            ></TextInput>
-            <View style={{ borderWidth: 1, borderRadius: 10, marginTop: 15 }}>
-              <Picker
-                selectedValue={values?.category}
-                className="border-2"
-                onValueChange={(itemValue) =>
-                  setFieldValue('category', itemValue)
-                }
+    <KeyboardAvoidingView>
+      <ScrollView className="p-10 bg-white">
+        <Text className="text-[27px] font-bold mt-5">Agregar Actividad</Text>
+        <Text className="text-[17px] text-gray-500 mb-3">
+          Llena los campos para agregar una actividad
+        </Text>
+        <Formik
+          initialValues={{
+            title: '',
+            description: '',
+            category: '',
+            // date: '',
+            // time: '',
+            location: '',
+            image: '',
+            userName: '',
+            userEmail: '',
+            createdAt: '',
+          }}
+          onSubmit={(value, {resetForm}) => onSubmitMethod(value, resetForm)}
+          // validate={(values) => {
+          //   const errors = {};
+          //   if (!values.title) {
+          //     ToastAndroid.show('Titulo no presente', ToastAndroid.SHORT);
+          //     errors.title = 'Requerido';
+          //   }
+          //   if (!values.description) {
+          //     ToastAndroid.show('Descripción no presente', ToastAndroid.SHORT);
+          //     errors.description = 'Requerido';
+          //   }
+          //   if (!values.category) {
+          //     ToastAndroid.show('Categoría no presente', ToastAndroid.SHORT);
+          //     errors.category = 'Requerido';
+          //   }
+          //   if (!values.location) {
+          //     ToastAndroid.show('Ubicación no presente', ToastAndroid.SHORT);
+          //     errors.location = 'Requerido';
+          //   }
+          //   return errors;
+          // }}
+          
+        >
+          {({
+            handleChange,
+            handleBlur,
+            handleSubmit,
+            setFieldValue,
+            values,
+            //errors,
+          }) => (
+            <View>
+              <TouchableOpacity onPress={pickImage}>
+                {image ? (
+                  <Image
+                    source={{ uri: image }}
+                    style={{
+                      width: 150,
+                      height: 150,
+                      borderRadius: 10,
+                      alignSelf: 'center',
+                    }}
+                  />
+                ) : (
+                  <Image
+                    source={require('../../assets/images/image_placeholder.jpg')}
+                    style={{
+                      width: 150,
+                      height: 150,
+                      borderRadius: 10,
+                      alignSelf: 'center',
+                    }}
+                  />
+                )}
+              </TouchableOpacity>
+              <TextInput
+                style={styles.input}
+                placeholder="Titulo"
+                value={values?.title}
+                onChangeText={handleChange('title')}
+              ></TextInput>
+              <TextInput
+                style={styles.input}
+                placeholder="Descripción"
+                value={values?.description}
+                numberOfLines={5}
+                onChangeText={handleChange('description')}
+              ></TextInput>
+              <TextInput
+                style={styles.input}
+                placeholder="Ubicación"
+                value={values?.location}
+                onChangeText={handleChange('location')}
+              ></TextInput>
+              <View style={{ borderWidth: 1, borderRadius: 10, marginTop: 15 }}>
+                <Picker
+                  selectedValue={values?.category}
+                  className="border-2"
+                  onValueChange={(itemValue) =>
+                    setFieldValue('category', itemValue)
+                  }
+                >
+                  {categoryList.length > 0 &&
+                    categoryList?.map((item, index) => (
+                      <Picker.Item
+                        key={index}
+                        label={item?.name}
+                        value={item?.name}
+                      />
+                    ))}
+                </Picker>
+              </View>
+              <TouchableOpacity
+                onPress={handleSubmit}
+                className="p-3 bg-blue-500 rounded-full mt-20"
+                style={{ backgroundColor: uploading ? '#ccc' : '#007BFF' }}
+                disabled={uploading}
               >
-                {categoryList.length > 0 &&
-                  categoryList?.map((item, index) => (
-                    <Picker.Item
-                      key={index}
-                      label={item?.name}
-                      value={item?.name}
-                    />
-                  ))}
-              </Picker>
+                {uploading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text className="text-white text-center text-[18px]">
+                    Agregar
+                  </Text>
+                )}
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity
-              onPress={handleSubmit}
-              className="p-3 bg-blue-500 rounded-full mt-20"
-              style={{ backgroundColor: uploading ? '#ccc' : '#007BFF' }}
-              disabled={uploading}
-            >
-              {uploading ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <Text className="text-white text-center text-[18px]">
-                  Agregar
-                </Text>
-              )}
-            </TouchableOpacity>
-          </View>
-        )}
-      </Formik>
-    </View>
+          )}
+        </Formik>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 

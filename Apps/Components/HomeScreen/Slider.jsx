@@ -1,11 +1,10 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-export default function ExploreScreen() {
-
+export default function Slider() {
   return (
     <View>
-      <Text>ExploreScreen</Text>
+      <Text>Slider</Text>
     </View>
   )
 }

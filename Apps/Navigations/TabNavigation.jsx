@@ -6,6 +6,7 @@ import ExploreScreen from '../Screens/ExploreScreen';
 import AddActivityScreen from '../Screens/AddActivityScreen';
 import ProfileScreen from '../Screens/ProfileScreen';
 import { FontAwesome5 } from '@expo/vector-icons';
+import HomeScreenStackNavigation from './HomeScreenStackNavigation';
 
 const Tab = createBottomTabNavigator();
 
@@ -18,8 +19,8 @@ export default function TabNavigation() {
       }}
     >
       <Tab.Screen
-        name="Inicio"
-        component={HomeScreen}
+        name="home-nav"
+        component={HomeScreenStackNavigation}
         options={{
           tabBarLabel: ({ color }) => (
             <Text style={{ color: color, fontSize: 12, marginBottom: 3 }}>
@@ -32,7 +33,7 @@ export default function TabNavigation() {
         }}
       />
       <Tab.Screen
-        name="Explorar"
+        name="explore"
         component={ExploreScreen}
         options={{
           tabBarLabel: ({ color }) => (
@@ -46,7 +47,7 @@ export default function TabNavigation() {
         }}
       />
       <Tab.Screen
-        name="Agregar Actividad"
+        name="add-activity"
         component={AddActivityScreen}
         options={{
           tabBarLabel: ({ color }) => (
@@ -60,7 +61,7 @@ export default function TabNavigation() {
         }}
       />
       <Tab.Screen
-        name="Perfil"
+        name="profile"
         component={ProfileScreen}
         options={{
           tabBarLabel: ({ color }) => (
