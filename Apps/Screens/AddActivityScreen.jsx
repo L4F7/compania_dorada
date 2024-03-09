@@ -18,7 +18,6 @@ import { Picker } from '@react-native-picker/picker';
 import { getDocs, getFirestore, collection, addDoc } from 'firebase/firestore';
 import * as ImagePicker from 'expo-image-picker';
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
-import { useUser } from '@clerk/clerk-expo';
 
 export default function AddActivity() {
   const [categoryList, setCategoryList] = useState([]);
@@ -27,7 +26,6 @@ export default function AddActivity() {
 
   const db = getFirestore(app);
   const storage = getStorage();
-  const { user } = useUser();
 
   const getCategoryList = async () => {
     try {
@@ -74,9 +72,9 @@ export default function AddActivity() {
       .then((_response) => {
         getDownloadURL(storageRef).then(async (downloadUrl) => {
           value.image = downloadUrl;
-          value.userName = user.fullName;
-          value.userEmail = user.primaryEmailAddress.emailAddress;
-          value.userImage = user.imageUrl;
+          // value.userName = user.fullName;
+          // value.userEmail = user.primaryEmailAddress.emailAddress;
+          // value.userImage = user.imageUrl;
           value.createdAt = new Date().toISOString();
 
           const docRef = await addDoc(collection(db, 'UserPost'), value);

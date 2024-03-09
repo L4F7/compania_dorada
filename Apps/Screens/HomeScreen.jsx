@@ -1,4 +1,4 @@
-import { View, Text, ScrollView } from 'react-native'
+import { ScrollView } from 'react-native'
 import Header from '../Components/HomeScreen/Header'
 import { useState, React, useEffect, useCallback  } from 'react';
 import { app } from '../../firebaseConfig';

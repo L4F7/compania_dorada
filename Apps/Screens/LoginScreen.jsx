@@ -1,29 +1,45 @@
-import { View, Text, Image, TouchableOpacity } from 'react-native';
-import React from 'react';
-import * as WebBrowser from 'expo-web-browser';
-import { useOAuth } from "@clerk/clerk-expo";
-import { useWarmUpBrowser } from "./../../hooks/useWarmUpBrowser";
+import { View, Text, Image, TouchableOpacity, TextInput, Alert } from 'react-native';
+import React, { useEffect } from 'react';
+import { auth } from '../../firebaseConfig';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
+import { useNavigation } from '@react-navigation/core'
 
-WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen() {
-  useWarmUpBrowser();
+  const [email, setEmail] = React.useState('')
+  const [password, setPassword] = React.useState('')
 
-  const { startOAuthFlow } = useOAuth({ strategy: 'oauth_google' });
+  const navigation = useNavigation()
 
-  const onPress = React.useCallback(async () => {
-    try {
-      const { createdSessionId, signIn, signUp, setActive } =
-        await startOAuthFlow();
- 
-      if (createdSessionId) {
-        setActive({ session: createdSessionId });
+  const handleSignUp = () => {
+    createUserWithEmailAndPassword(auth, email, password)
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+      });
+  }
+
+  const handleLogin = () => {
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        console.log(user.email)
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+      });
+  }
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        navigation.replace('tab-navigation');
       } else {
-        // Use signIn or signUp for next steps such as MFA
+        console.log('No user is signed in')
       }
-    } catch (err) {
-      console.error("OAuth error", err);
-    }
+    });
+    return unsubscribe;
   }, []);
 
   return (
@@ -37,11 +53,34 @@ export default function LoginScreen() {
         <Text className="text-[18px] text-slate-500 mt-6">
           Actividades para compartir y conocer nuevas personas
         </Text>
+        <TextInput
+          value={email}
+          onChangeText={setEmail}
+          placeholder="Correo electrónico"
+          className="border-b-2 border-slate-300 mt-6"
+        />
+        <TextInput
+          value={password}
+          onChangeText={setPassword}
+          placeholder="Contraseña"
+          className="border-b-2 border-slate-300 mt-6"
+        />
+        {/** Sign in and Sign up */}
         <TouchableOpacity
-          onPress={onPress}
+          onPress={handleLogin}
           className="p-3 bg-blue-500 rounded-full mt-20"
         >
-          <Text className="text-white text-center text-[18px]">¡Iniciar!</Text>
+          <Text className="text-white text-center text-[18px]">
+            Iniciar sesión
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={handleSignUp}
+          className="p-3 bg-blue-500 rounded-full mt-6"
+        >
+          <Text className="text-white text-center text-[18px]">
+            Registrarse
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
