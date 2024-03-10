@@ -1,17 +1,43 @@
-import { View, Text, Image, ScrollView, TouchableOpacity } from 'react-native'
+import { View, Text, Image, ScrollView, TouchableOpacity, Share } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useRoute } from '@react-navigation/native'
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons';
 
-export default function ActivityDetails() {
+export default function ActivityDetails({ navigation}) {
 
     const {params} = useRoute();  
     const [activity, setActivity] = useState({});
 
     useEffect(() => {
-        params&&setActivity(params.activity);
+      params && setActivity(params.activity);
+      shareButton();
+    }, [params, navigation]);
+
+    const shareActivity = async () => {
+      try {
+        await Share.share({
+          message: `¡Participa en esta actividad! ${activity.title} en ${activity.location}`,
+        });
+      } catch (error) {
+        console.log(error.message);
+      }
     }
-    , []);
+
+    const shareButton = () => {
+        navigation.setOptions({
+          headerRight: () => (
+            <TouchableOpacity onPress={() => shareActivity()}>
+              <FontAwesome5
+                name="share-alt"
+                size={24}
+                color="black"
+                style={{ marginRight: 15 }}
+              />
+            </TouchableOpacity>
+          ),
+        });
+    }
 
   return (
     <ScrollView>

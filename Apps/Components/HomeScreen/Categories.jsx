@@ -14,7 +14,7 @@ export default function Categories({ categoryList }) {
         renderItem={({ item, index }) => (
           <TouchableOpacity
             onPress={() =>
-              navigation.navigate('', { category: item.name })
+              navigation.navigate('activity-list', { category: item.name })
             }
             className="flex-1 items-center justify-center
           p-2 border-[1px] border-gray-300 m-1 h-[115px] rounded-lg
