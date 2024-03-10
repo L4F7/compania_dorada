@@ -13,18 +13,19 @@ import {
 } from 'react-native';
 import { Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
-import { app } from '../../firebaseConfig';
+import { db, auth } from '../../firebaseConfig';
 import { Picker } from '@react-native-picker/picker';
-import { getDocs, getFirestore, collection, addDoc } from 'firebase/firestore';
+import { getDocs, collection, addDoc } from 'firebase/firestore';
 import * as ImagePicker from 'expo-image-picker';
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
+
 
 export default function AddActivity() {
   const [categoryList, setCategoryList] = useState([]);
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false);
 
-  const db = getFirestore(app);
+  const user = auth.currentUser;
   const storage = getStorage();
 
   const getCategoryList = async () => {
@@ -72,9 +73,7 @@ export default function AddActivity() {
       .then((_response) => {
         getDownloadURL(storageRef).then(async (downloadUrl) => {
           value.image = downloadUrl;
-          // value.userName = user.fullName;
-          // value.userEmail = user.primaryEmailAddress.emailAddress;
-          // value.userImage = user.imageUrl;
+          value.userEmail = user.email;
           value.createdAt = new Date().toISOString();
 
           const docRef = await addDoc(collection(db, 'UserPost'), value);
@@ -104,7 +103,6 @@ export default function AddActivity() {
             // time: '',
             location: '',
             image: '',
-            userName: '',
             userEmail: '',
             createdAt: '',
           }}

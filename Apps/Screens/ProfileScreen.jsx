@@ -8,7 +8,7 @@ export default function ProfileScreen() {
   const navigation = useNavigation()
 
   return (
-    <View>
+    <View className="mt-10" >
       <Text>ProfileScreen</Text>
       <TouchableOpacity
         onPress={() => {

@@ -49,8 +49,11 @@ export default function HomeScreen() {
   return (
     <ScrollView className="py-8 px-6 bg-white flex-1">
       <Header />
-        <Categories categoryList={categoryList} />
-        <LatestActivityList latestActivityList={latestActivityList} />
+      <Categories categoryList={categoryList} />
+      <LatestActivityList
+        latestActivityList={latestActivityList}
+        heading={'Ultimas Actividades'}
+      />
     </ScrollView>
   );
 }

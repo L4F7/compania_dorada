@@ -46,9 +46,9 @@ export default function LoginScreen() {
     <View>
       <Image
         source={require('./../../assets/images/login.jpg')}
-        className="w-full h-[400px] object-cover"
+        className="w-full h-[300px] object-cover"
       />
-      <View className="p-8 bg-white mt-[-20px] rounded-t-3xl shadow-md">
+      <View className="p-8 bg-white mt-[-20px] rounded-t-3xl rounded-b-3xl shadow-md">
         <Text className="text-[30px] font-bold">Compañia Dorada</Text>
         <Text className="text-[18px] text-slate-500 mt-6">
           Actividades para compartir y conocer nuevas personas
@@ -57,18 +57,19 @@ export default function LoginScreen() {
           value={email}
           onChangeText={setEmail}
           placeholder="Correo electrónico"
-          className="border-b-2 border-slate-300 mt-6"
+          className="border-b-2 border-slate-300 mt-6 text-[20px]"
         />
         <TextInput
           value={password}
+          secureTextEntry={true}
           onChangeText={setPassword}
           placeholder="Contraseña"
-          className="border-b-2 border-slate-300 mt-6"
+          className="border-b-2 border-slate-300 mt-6 text-[20px]"
         />
         {/** Sign in and Sign up */}
         <TouchableOpacity
           onPress={handleLogin}
-          className="p-3 bg-blue-500 rounded-full mt-20"
+          className="p-3 bg-blue-500 rounded-full mt-10"
         >
           <Text className="text-white text-center text-[18px]">
             Iniciar sesión
