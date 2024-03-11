@@ -16,8 +16,8 @@ export default function Header() {
           className="rounded-full h-12 w-12"
         /> */}
         <View>
-          <Text className="text-[16px]">Bienvenido</Text>
-          <Text className="text-[20px] font-bold">{user.email}</Text>
+          <Text className="text-[20px]">Bienvenido</Text>
+          <Text className="text-[25px] font-bold">{user.email.split("@").at(0)}</Text>
         </View>
       </View>
 

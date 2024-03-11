@@ -35,12 +35,8 @@ export default function ActivityList() {
     <View className="p-2">
       {loading ? (
         <ActivityIndicator className="mt-24" size={'large'} color={'black'} />
-      ) : activityList?.length > 0 ? (
-        <LatestActivityList latestActivityList={activityList} heading={``} />
       ) : (
-        <Text className="p-5 text-[20px] text-gray-400 text-center">
-          No hay actividades en esta categoría de momento
-        </Text>
+        <LatestActivityList latestActivityList={activityList} heading={``} />
       )}
     </View>
   );

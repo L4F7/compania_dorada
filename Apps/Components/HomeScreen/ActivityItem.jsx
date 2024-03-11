@@ -1,15 +1,13 @@
-import { View, Text, TouchableOpacity, Image } from 'react-native'
-import React from 'react'
+import { View, Text, TouchableOpacity, Image } from 'react-native';
+import React, { useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 
-
-export default function ActivityItem({item}) {
-
+export default function ActivityItem({ item }) {
   const navigation = useNavigation();
 
   return (
     <TouchableOpacity
-      className="flex-1 m-2 p-2 rounded-lg  border-[2px] border-gray-200"
+      className="flex-1 m-2 p-2 rounded-lg  border-[2px] border-gray-200 bg-gray-50"
       onPress={() => {
         navigation.push('activity-details', { activity: item });
       }}

@@ -1,11 +1,11 @@
 import { Text } from 'react-native';
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import ExploreScreen from '../Screens/ExploreScreen';
 import AddActivityScreen from '../Screens/AddActivityScreen';
-import ProfileScreen from '../Screens/ProfileScreen';
 import HomeScreenStackNavigation from './HomeScreenStackNavigation';
 import { FontAwesome5 } from '@expo/vector-icons';
+import ExploreScreenStackNavigation from './ExploreScreenStackNavigation';
+import ProfileStackNavigation from './ProfileStackNavigation';
 
 const Tab = createBottomTabNavigator();
 
@@ -33,7 +33,7 @@ export default function TabNavigation() {
       />
       <Tab.Screen
         name="explore"
-        component={ExploreScreen}
+        component={ExploreScreenStackNavigation}
         options={{
           tabBarLabel: ({ color }) => (
             <Text style={{ color: color, fontSize: 12, marginBottom: 3 }}>
@@ -61,7 +61,7 @@ export default function TabNavigation() {
       />
       <Tab.Screen
         name="profile"
-        component={ProfileScreen}
+        component={ProfileStackNavigation}
         options={{
           tabBarLabel: ({ color }) => (
             <Text style={{ color: color, fontSize: 12, marginBottom: 3 }}>
