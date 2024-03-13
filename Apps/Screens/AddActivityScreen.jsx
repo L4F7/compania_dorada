@@ -18,11 +18,20 @@ import { Picker } from '@react-native-picker/picker';
 import { getDocs, collection, addDoc } from 'firebase/firestore';
 import * as ImagePicker from 'expo-image-picker';
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
-
+import DateTimePicker from '@react-native-community/datetimepicker';
+import RNDateTimePicker from '@react-native-community/datetimepicker';
+import * as Crypto from 'expo-crypto';
 
 export default function AddActivity() {
   const [categoryList, setCategoryList] = useState([]);
   const [image, setImage] = useState(null);
+
+  const [date, setDate] = useState(null);
+  const [time, setTime] = useState(null);
+
+  const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+  const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
+
   const [uploading, setUploading] = useState(false);
 
   const user = auth.currentUser;
@@ -75,6 +84,11 @@ export default function AddActivity() {
           value.image = downloadUrl;
           value.userEmail = user.email;
           value.createdAt = new Date().toISOString();
+          value.date = date.toISOString().split('T')[0];
+          value.time = time.toTimeString().split(' ')[0];
+          value.maxParticipants = parseInt(value.maxParticipants);
+          value.currentParticipants = 0;
+          value.id = Crypto.randomUUID();
 
           const docRef = await addDoc(collection(db, 'UserPost'), value);
           if (docRef.id) {
@@ -82,9 +96,58 @@ export default function AddActivity() {
             Alert.alert('Actividad agregada exitosamente');
             resetForm();
             setImage(null);
+            setDate(null);
+            setTime(null);
+          } else {
+            setUploading(false);
+            Alert.alert('Error al agregar actividad');
           }
         });
       });
+  };
+
+  const handleDatePickerChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setIsDatePickerVisible(false);
+    setDate(currentDate);
+  };
+
+  const handleTimePickerChange = (event, selectedTime) => {
+    const currentTime = selectedTime || time;
+    setIsTimePickerVisible(false);
+    setTime(currentTime);
+  };
+
+  const formatTime = (time) => {
+    let hours = time.split(':')[0];
+    let minutes = time.split(':')[1];
+    let formatedTime =
+      hours > 12 ? `${hours - 12}:${minutes} PM` : `${hours}:${minutes} AM`;
+    return formatedTime;
+  };
+
+  const formatDate = (date) => {
+    const months = {
+      '01': 'Enero',
+      '02': 'Febrero',
+      '03': 'Marzo',
+      '04': 'Abril',
+      '05': 'Mayo',
+      '06': 'Junio',
+      '07': 'Julio',
+      '08': 'Agosto',
+      '09': 'Septiembre',
+      10: 'Octubre',
+      11: 'Noviembre',
+      12: 'Diciembre',
+    };
+
+    const newDate = date.split('-');
+    const year = newDate[0];
+    const month = newDate[1];
+    const day = newDate[2];
+
+    return `${day} de ${months[month]} del ${year}`;
   };
 
   return (
@@ -96,17 +159,20 @@ export default function AddActivity() {
         </Text>
         <Formik
           initialValues={{
+            id: '',
             title: '',
             description: '',
             category: '',
-            // date: '',
-            // time: '',
             location: '',
             image: '',
             userEmail: '',
             createdAt: '',
+            maxParticipants: '',
+            currentParticipants: '',
+            date: new Date(),
+            time: new Date(),
           }}
-          onSubmit={(value, {resetForm}) => onSubmitMethod(value, resetForm)}
+          onSubmit={(value, { resetForm }) => onSubmitMethod(value, resetForm)}
           // validate={(values) => {
           //   const errors = {};
           //   if (!values.title) {
@@ -125,9 +191,15 @@ export default function AddActivity() {
           //     ToastAndroid.show('Ubicación no presente', ToastAndroid.SHORT);
           //     errors.location = 'Requerido';
           //   }
+          //   if (!values.maxParticipants) {
+          //     ToastAndroid.show(
+          //       'Número de participantes no presente',
+          //       ToastAndroid.SHORT
+          //     );
+          //     errors.maxParticipants = 'Requerido';
+          //   }
           //   return errors;
           // }}
-          
         >
           {({
             handleChange,
@@ -135,7 +207,7 @@ export default function AddActivity() {
             handleSubmit,
             setFieldValue,
             values,
-            //errors,
+            errors,
           }) => (
             <View>
               <TouchableOpacity onPress={pickImage}>
@@ -180,6 +252,62 @@ export default function AddActivity() {
                 value={values?.location}
                 onChangeText={handleChange('location')}
               ></TextInput>
+              <TextInput
+                style={styles.input}
+                keyboardType="numeric"
+                value={values?.maxParticipants}
+                placeholder="Numero de participantes"
+                onChangeText={handleChange('maxParticipants')}
+              />
+
+              <TouchableOpacity
+                onPress={() => {
+                  setIsDatePickerVisible(true);
+                }}
+                style={styles.input}
+                disabled={isTimePickerVisible}
+              >
+                <Text className="text-[17px]">
+                  {date
+                    ? formatDate(date.toISOString().split('T')[0])
+                    : 'Seleccionar fecha'}
+                </Text>
+              </TouchableOpacity>
+
+              {isDatePickerVisible && (
+                <DateTimePicker
+                  value={date || values.date} // Use state or formik value
+                  mode={'date'}
+                  timeZoneName={'America/Costa_Rica'}
+                  minimumDate={new Date()}
+                  onChange={handleDatePickerChange}
+                />
+              )}
+
+              <TouchableOpacity
+                onPress={() => {
+                  setIsTimePickerVisible(true);
+                }}
+                style={styles.input}
+                disabled={isDatePickerVisible}
+              >
+                <Text className="text-[17px]">
+                  {time
+                    ? formatTime(time.toTimeString().split(' ')[0])
+                    : 'Seleccionar hora'}
+                </Text>
+              </TouchableOpacity>
+
+              {isTimePickerVisible && (
+                <RNDateTimePicker
+                  value={time || values.time} // Use state or formik value
+                  mode={'time'}
+                  timeZoneName={'America/Costa_Rica'}
+                  is24Hour={true} // Optional: Set to true for 24-hour format
+                  onChange={handleTimePickerChange}
+                />
+              )}
+
               <View style={{ borderWidth: 1, borderRadius: 10, marginTop: 15 }}>
                 <Picker
                   selectedValue={values?.category}
@@ -200,7 +328,7 @@ export default function AddActivity() {
               </View>
               <TouchableOpacity
                 onPress={handleSubmit}
-                className="p-3 bg-blue-500 rounded-full mt-20"
+                className="p-3 bg-blue-500 rounded-full mt-5 mb-14"
                 style={{ backgroundColor: uploading ? '#ccc' : '#007BFF' }}
                 disabled={uploading}
               >

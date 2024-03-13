@@ -12,20 +12,44 @@ import { useRoute } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { auth, db } from '../../firebaseConfig';
-import { getDocs, deleteDoc, query, collection, where } from 'firebase/firestore';
+import {
+  getDocs,
+  addDoc,
+  deleteDoc,
+  updateDoc,
+  query,
+  collection,
+  where,
+} from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 
 export default function ActivityDetails({ navigation }) {
   const { params } = useRoute();
   const [activity, setActivity] = useState({});
+  const [formattedDateTime, setFormattedDateTime] = useState('');
+  const [subscribed, setSubscribed] = useState(false);
+  const [totalParticipants, setTotalParticipants] = useState(0);
 
   const user = auth.currentUser;
-  const nav= useNavigation();
+  const nav = useNavigation();
 
   useEffect(() => {
-    params && setActivity(params.activity);
+    if (params) {
+      params && setActivity(params.activity);
+      params && formatDateTime();
+      params && checkIfUserIsSubscribed(params.activity.id);
+      params && checkTotalParticipants(params.activity.id);
+    }
     shareButton();
   }, [params, navigation]);
+
+  const checkTotalParticipants = async (activityId) => {
+    const q = query(collection(db, 'UserPost'), where('id', '==', activityId));
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      setTotalParticipants(doc.data().currentParticipants);
+    });
+  };
 
   const shareActivity = async () => {
     try {
@@ -52,8 +76,83 @@ export default function ActivityDetails({ navigation }) {
     });
   };
 
-  const subscribeToActivity = () => {
-    console.log('Subscribiendo a actividad');
+  const checkIfUserIsSubscribed = async (activityId) => {
+    console.log('activityId', activityId);
+    const q = query(
+      collection(db, 'ActivityUserPost'),
+      where('userEmail', '==', user.email),
+      where('postId', '==', activityId)
+    );
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      if (doc.data().postId === activityId) {
+        setSubscribed(true);
+      }
+    });
+  };
+
+  const enrollUserToActivity = async () => {
+    const value = {
+      postId: activity.id,
+      userEmail: user.email,
+    };
+    const docRef = await addDoc(collection(db, 'ActivityUserPost'), value);
+    if (docRef.id) {
+      Alert.alert('¡Felicidades!', 'Te has inscrito a esta actividad');
+      setSubscribed(true);
+    }
+  };
+
+  const subscribeToActivity = async () => {
+    const q = query(collection(db, 'UserPost'), where('id', '==', activity.id));
+
+    const querySnapshot = await getDocs(q);
+    
+    querySnapshot.forEach((doc) => {
+      if (doc.data().currentParticipants < doc.data().maxParticipants) {
+        updateDoc(doc.ref, {
+          currentParticipants: doc.data().currentParticipants + 1,
+        }).then(() => {
+          enrollUserToActivity();
+          setTotalParticipants(doc.data().currentParticipants + 1);
+        });
+      } else {
+        Alert.alert('¡Lo sentimos!', 'Esta actividad ya no tiene cupo');
+      }
+    });
+  };
+
+  const unenrollUserToActivity = async () => {
+    const q = query(
+      collection(db, 'ActivityUserPost'),
+      where('userEmail', '==', user.email),
+      where('postId', '==', activity.id)
+    );
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      deleteDoc(doc.ref).then(() => {
+        setSubscribed(false);
+      });
+    });
+  };
+
+  const unsubscribeToActivity = async () => {
+    const q = query(collection(db, 'UserPost'), where('id', '==', activity.id));
+
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      if (doc.data().currentParticipants > 0) {
+        updateDoc(doc.ref, {
+          currentParticipants: doc.data().currentParticipants - 1,
+        }).then(() => {
+          unenrollUserToActivity();
+          setTotalParticipants(doc.data().currentParticipants - 1);
+          Alert.alert('¡Listo!', 'Has cancelado tu participación');
+        });
+      } else {
+        Alert.alert('¡Lo sentimos!', 'No puedes cancelar tu participación en este momento');
+      }
+    });
   };
 
   const deleteUserActivity = () => {
@@ -77,12 +176,7 @@ export default function ActivityDetails({ navigation }) {
   };
 
   const deleteFromFirebase = async () => {
-    const q = query(
-      collection(db, 'UserPost'),
-      where('title', '==', activity.title),
-      where('createdAt', '==', activity.createdAt),
-      where('userEmail', '==', activity.userEmail)
-    );
+    const q = query(collection(db, 'UserPost'), where('id', '==', activity.id));
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
       deleteDoc(doc.ref).then(() => {
@@ -92,6 +186,44 @@ export default function ActivityDetails({ navigation }) {
     });
   };
 
+  const formatTime = (time) => {
+    let hours = time.split(':')[0];
+    let minutes = time.split(':')[1];
+    let formatedTime =
+      hours > 12 ? `${hours - 12}:${minutes} PM` : `${hours}:${minutes} AM`;
+    return formatedTime;
+  };
+
+  const formatDateTime = () => {
+    const date = params.activity.date;
+    const time = params.activity.time;
+
+    const months = {
+      '01': 'Enero',
+      '02': 'Febrero',
+      '03': 'Marzo',
+      '04': 'Abril',
+      '05': 'Mayo',
+      '06': 'Junio',
+      '07': 'Julio',
+      '08': 'Agosto',
+      '09': 'Septiembre',
+      10: 'Octubre',
+      11: 'Noviembre',
+      12: 'Diciembre',
+    };
+
+    const newDate = date.split('-');
+    const year = newDate[0];
+    const month = newDate[1];
+    const day = newDate[2];
+
+    const newTime = formatTime(time);
+
+    setFormattedDateTime(
+      `${day} de ${months[month]} del ${year} a las ${newTime}`
+    );
+  };
   return (
     <ScrollView>
       <Image className="h-[350px] w-full" source={{ uri: activity.image }} />
@@ -107,9 +239,15 @@ export default function ActivityDetails({ navigation }) {
         </View>
         <Text className="text-[20px] font-bold mt-3">Ubicación</Text>
         <Text className="text-[17px] text-gray-600">{activity.location}</Text>
+        <Text className="text-[20px] font-bold mt-3">Fecha y hora</Text>
+        <Text className="text-[17px] text-gray-600">{formattedDateTime}</Text>
         <Text className="text-[20px] font-bold mt-3">Descripción</Text>
         <Text className="text-[17px] text-gray-600">
           {activity.description}
+        </Text>
+        <Text className="text-[20px] font-bold mt-3">Cupo</Text>
+        <Text className="text-[17px] text-gray-600">
+          {totalParticipants}/{activity.maxParticipants}
         </Text>
 
         <View className="p-3 flex flex-row items-center mt-3 rounded-md bg-blue-100">
@@ -124,11 +262,25 @@ export default function ActivityDetails({ navigation }) {
       </View>
       <View className=" pl-3 pr-3 mb-5">
         {user.email !== activity.userEmail ? (
-          <TouchableOpacity className=" bg-blue-500 w-full p-3 rounded-full">
-            <Text className="text-center text-white font-bold text-[20px]">
-              ¡Participar!
-            </Text>
-          </TouchableOpacity>
+          subscribed ? (
+            <TouchableOpacity
+              className=" bg-red-500 w-full p-3 rounded-full mt-3"
+              onPress={unsubscribeToActivity}
+            >
+              <Text className="text-center text-white font-bold text-[20px]">
+                Cancelar participación
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              className=" bg-blue-500 w-full p-3 rounded-full mt-3"
+              onPress={subscribeToActivity}
+            >
+              <Text className="text-center text-white font-bold text-[20px]">
+                ¡Participar!
+              </Text>
+            </TouchableOpacity>
+          )
         ) : (
           <TouchableOpacity
             className=" bg-red-500 w-full p-3 rounded-full mt-3"

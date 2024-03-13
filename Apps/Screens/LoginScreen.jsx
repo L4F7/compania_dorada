@@ -57,6 +57,8 @@ export default function LoginScreen() {
           value={email}
           onChangeText={setEmail}
           placeholder="Correo electrónico"
+          keyboardType='email-address'
+          textContentType='emailAddress'
           className="border-b-2 border-slate-300 mt-6 text-[20px]"
         />
         <TextInput
@@ -64,6 +66,7 @@ export default function LoginScreen() {
           secureTextEntry={true}
           onChangeText={setPassword}
           placeholder="Contraseña"
+          textContentType='password'
           className="border-b-2 border-slate-300 mt-6 text-[20px]"
         />
         {/** Sign in and Sign up */}
