@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity, Image, FlatList } from 'react-native';
 import React from 'react';
-import { auth } from '../../firebaseConfig';
+import { auth, removeData } from '../../firebaseConfig';
 import { useNavigation } from '@react-navigation/core';
 import activities from '../../assets/images/activities.png';
 import search from '../../assets/images/search.png';
@@ -33,6 +33,7 @@ export default function ProfileScreen() {
       title: 'Cerrar sesión',
       icon: logout,
       onPress: () => {
+        removeData('user');
         auth.signOut();
         navigation.navigate('Login');
       },

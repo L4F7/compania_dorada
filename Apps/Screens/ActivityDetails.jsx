@@ -22,6 +22,7 @@ import {
   where,
 } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
+import Button from '../Components/Button';
 
 export default function ActivityDetails({ navigation }) {
   const { params } = useRoute();
@@ -263,33 +264,53 @@ export default function ActivityDetails({ navigation }) {
       <View className=" pl-3 pr-3 mb-5">
         {user.email !== activity.userEmail ? (
           subscribed ? (
-            <TouchableOpacity
-              className=" bg-red-500 w-full p-3 rounded-full mt-3"
+            // <TouchableOpacity
+            //   className=" bg-red-500 w-full p-3 rounded-full mt-3"
+            //   onPress={unsubscribeToActivity}
+            // >
+            //   <Text className="text-center text-white font-bold text-[20px]">
+            //     Cancelar participación
+            //   </Text>
+            // </TouchableOpacity>
+            <Button 
+              title={'Cancelar participación'}
               onPress={unsubscribeToActivity}
-            >
-              <Text className="text-center text-white font-bold text-[20px]">
-                Cancelar participación
-              </Text>
-            </TouchableOpacity>
+              bgColor={'red-500'}
+              width={'w-full'}
+            />
           ) : (
-            <TouchableOpacity
-              className=" bg-blue-500 w-full p-3 rounded-full mt-3"
+            // <TouchableOpacity
+            //   className=" bg-blue-500 w-full p-3 rounded-full mt-3"
+            //   onPress={subscribeToActivity}
+            // >
+            //   <Text className="text-center text-white font-bold text-[20px]">
+            //     ¡Participar!
+            //   </Text>
+            // </TouchableOpacity>
+            <Button 
+              title={'¡Participar!'}
               onPress={subscribeToActivity}
-            >
-              <Text className="text-center text-white font-bold text-[20px]">
-                ¡Participar!
-              </Text>
-            </TouchableOpacity>
+              bgColor={'blue-500'}
+              width={'w-full'}
+            />
           )
         ) : (
-          <TouchableOpacity
-            className=" bg-red-500 w-full p-3 rounded-full mt-3"
+          // <TouchableOpacity
+          //   className=" bg-red-500 w-full p-3 rounded-full mt-3"
+          //   onPress={deleteUserActivity}
+          // >
+          //   <Text className="text-center text-white font-bold text-[20px]">
+          //     Eliminar actividad
+          //   </Text>
+          // </TouchableOpacity>
+          <Button 
+            title={'Eliminar actividad'}
             onPress={deleteUserActivity}
-          >
-            <Text className="text-center text-white font-bold text-[20px]">
-              Eliminar actividad
-            </Text>
-          </TouchableOpacity>
+            bgColor={'red-500'}
+            width={'w-full'}
+            //testear con className
+            //className="mt-3"
+          />
         )}
       </View>
     </ScrollView>

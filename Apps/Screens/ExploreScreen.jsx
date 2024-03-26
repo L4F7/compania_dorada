@@ -47,7 +47,7 @@ export default function ExploreScreen() {
       ) : activityList.length > 0 ? (
         <LatestActivityList
           latestActivityList={activityList}
-          heading="Últimas actividades"
+          heading=""
         />
       ) : (
         <View className="h-[400px] w-full items-center justify-center">

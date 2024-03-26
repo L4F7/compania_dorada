@@ -17,27 +17,29 @@ export default function Categories({ categoryList }) {
       <Text className="font-bold text-[25px]">Categorías</Text>
       {categoryList.length > 0 ? (
         <FlatList
-          numColumns={3}
+          horizontal={true}
           data={categoryList}
           renderItem={({ item, index }) => (
             <TouchableOpacity
               onPress={() =>
                 navigation.navigate('activity-list', { category: item.name })
               }
-              className="flex-1 items-center justify-center
-        p-2 border-[1px] border-gray-300 m-1 h-[115px] rounded-lg
-         bg-blue-50 border-blue200"
+              className="flex-1 items-center justify-center p-2 border-[1px] border-gray-300 m-1 h-[125px] w-[125px] rounded-lg bg-blue-50 border-blue200"
             >
               <Image
                 source={{ uri: item.icon }}
-                className=" w-[50%] h-[50%] "
+                className=" w-[75px] h-[75px] "
               />
-              <Text className="text-[12px] mt-1"> {item.name}</Text>
+              <Text className="text-[20px] mt-1 font-bold"> {item.name}</Text>
             </TouchableOpacity>
           )}
         />
       ) : (
-        <ActivityIndicator className="mt-10 mb-10" size={'large'} color={'blue'} />
+        <ActivityIndicator
+          className="mt-10 mb-10"
+          size={'large'}
+          color={'blue'}
+        />
       )}
     </View>
   );
