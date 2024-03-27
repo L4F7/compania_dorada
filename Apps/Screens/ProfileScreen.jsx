@@ -1,10 +1,10 @@
-import { View, Text, TouchableOpacity, Image, FlatList } from 'react-native';
-import React from 'react';
+import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
 import { auth, removeData } from '../../firebaseConfig';
-import { useNavigation } from '@react-navigation/core';
+
 import activities from '../../assets/images/activities.png';
-import search from '../../assets/images/search.png';
 import logout from '../../assets/images/logout.png';
+import search from '../../assets/images/search.png';
+import { useNavigation } from '@react-navigation/core';
 
 export default function ProfileScreen() {
   const user = auth.currentUser;
@@ -20,14 +20,14 @@ export default function ProfileScreen() {
         navigation.navigate('my-activities');
       },
     },
-    {
-      id: 2,
-      title: 'Explorar',
-      icon: search,
-      onPress: () => {
-        navigation.navigate('explore');
-      },
-    },
+    // {
+    //   id: 2,
+    //   title: 'Explorar',
+    //   icon: search,
+    //   onPress: () => {
+    //     navigation.navigate('explore');
+    //   },
+    // },
     {
       id: 3,
       title: 'Cerrar sesión',

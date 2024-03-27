@@ -1,5 +1,5 @@
-import { View, TextInput, Text } from 'react-native';
-import React from 'react';
+import { Text, TextInput, View } from 'react-native';
+
 import { FontAwesome5 } from '@expo/vector-icons';
 import { auth } from '../../../firebaseConfig';
 

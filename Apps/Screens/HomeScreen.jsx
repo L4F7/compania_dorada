@@ -1,10 +1,11 @@
-import { ScrollView } from 'react-native'
-import Header from '../Components/HomeScreen/Header'
-import { useState, React, useEffect, useCallback  } from 'react';
-import { app } from '../../firebaseConfig';
-import { getFirestore, collection, getDocs, orderBy } from 'firebase/firestore';
+import { collection, getDocs, getFirestore, orderBy } from 'firebase/firestore';
+import { useCallback, useEffect, useState } from 'react';
+
 import Categories from '../Components/HomeScreen/Categories';
+import Header from '../Components/HomeScreen/Header'
 import LatestActivityList from '../Components/HomeScreen/LatestActivityList';
+import { ScrollView } from 'react-native'
+import { app } from '../../firebaseConfig';
 import { useFocusEffect } from '@react-navigation/native';
 
 export default function HomeScreen() {

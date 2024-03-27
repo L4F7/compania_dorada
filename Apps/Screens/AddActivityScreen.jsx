@@ -1,26 +1,27 @@
+import * as Crypto from 'expo-crypto';
+import * as ImagePicker from 'expo-image-picker';
+
 import {
-  View,
+  ActivityIndicator,
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
-  Image,
-  ToastAndroid,
-  Alert,
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  ScrollView,
+  View,
 } from 'react-native';
-import { Formik } from 'formik';
-import React, { useEffect, useState } from 'react';
-import { db, auth } from '../../firebaseConfig';
-import { Picker } from '@react-native-picker/picker';
-import { getDocs, collection, addDoc } from 'firebase/firestore';
-import * as ImagePicker from 'expo-image-picker';
+import { addDoc, collection, getDocs } from 'firebase/firestore';
+import { auth, db } from '../../firebaseConfig';
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
+import { useEffect, useState } from 'react';
+
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { Formik } from 'formik';
+import { Picker } from '@react-native-picker/picker';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
-import * as Crypto from 'expo-crypto';
 
 export default function AddActivity() {
   const [categoryList, setCategoryList] = useState([]);
@@ -67,7 +68,35 @@ export default function AddActivity() {
     }
   };
 
+  const validateImage = () => {
+    if (!image) {
+      Alert.alert('Error', 'Imagen no seleccionada');
+      return false;
+    }
+    return true;
+  };
+
+  const validateDate = () => {
+    if (!date) {
+      Alert.alert('Error', 'Fecha no seleccionada');
+      return false;
+    }
+    return true;
+  };
+
+  const validateTime = () => {
+    if (!time) {
+      Alert.alert('Error', 'Hora no seleccionada');
+      return false;
+    }
+    return true;
+  };
+
   const onSubmitMethod = async (value, resetForm) => {
+    if (!validateImage()) return;
+    if (!validateDate()) return;
+    if (!validateTime()) return;
+
     setUploading(true);
 
     // Converts the URI into a Blob file
@@ -87,7 +116,7 @@ export default function AddActivity() {
           value.date = date.toISOString().split('T')[0];
           value.time = time.toTimeString().split(' ')[0];
           value.maxParticipants = parseInt(value.maxParticipants);
-          value.currentParticipants = 0;
+          value.currentParticipants = parseInt(0);
           value.id = Crypto.randomUUID();
 
           const docRef = await addDoc(collection(db, 'UserPost'), value);
@@ -103,6 +132,10 @@ export default function AddActivity() {
             Alert.alert('Error al agregar actividad');
           }
         });
+      })
+      .catch((error) => {
+        setUploading(false);
+        Alert.alert('Error al subir imagen');
       });
   };
 
@@ -169,46 +202,33 @@ export default function AddActivity() {
             createdAt: '',
             maxParticipants: '',
             currentParticipants: '',
-            date: new Date(),
-            time: new Date(),
           }}
           onSubmit={(value, { resetForm }) => onSubmitMethod(value, resetForm)}
-          // validate={(values) => {
-          //   const errors = {};
-          //   if (!values.title) {
-          //     ToastAndroid.show('Titulo no presente', ToastAndroid.SHORT);
-          //     errors.title = 'Requerido';
-          //   }
-          //   if (!values.description) {
-          //     ToastAndroid.show('Descripción no presente', ToastAndroid.SHORT);
-          //     errors.description = 'Requerido';
-          //   }
-          //   if (!values.category) {
-          //     ToastAndroid.show('Categoría no presente', ToastAndroid.SHORT);
-          //     errors.category = 'Requerido';
-          //   }
-          //   if (!values.location) {
-          //     ToastAndroid.show('Ubicación no presente', ToastAndroid.SHORT);
-          //     errors.location = 'Requerido';
-          //   }
-          //   if (!values.maxParticipants) {
-          //     ToastAndroid.show(
-          //       'Número de participantes no presente',
-          //       ToastAndroid.SHORT
-          //     );
-          //     errors.maxParticipants = 'Requerido';
-          //   }
-          //   return errors;
-          // }}
+          validateOnBlur={false}
+          validateOnChange={false}
+          validateOnMount={false}
+          validate={(values) => {
+            const errors = {};
+            if (!values.title) {
+              Alert.alert('Error', 'El titulo es requerido');
+              errors.title = 'Requerido';
+            } else if (!values.description) {
+              Alert.alert('Error', 'La descripción es requerida');
+              errors.description = 'Requerido';
+            } else if (!values.location) {
+              Alert.alert('Error', 'La ubicación es requerida');
+              errors.location = 'Requerido';
+            } else if (!values.maxParticipants) {
+              Alert.alert('Error', 'El número de participantes es requerido');
+              errors.maxParticipants = 'Requerido';
+            } else if (!values.category) {
+              Alert.alert('Error', 'La categoría es requerida');
+              errors.category = 'Requerido';
+            }
+            return errors;
+          }}
         >
-          {({
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            setFieldValue,
-            values,
-            errors,
-          }) => (
+          {({ handleChange, handleSubmit, setFieldValue, values }) => (
             <View>
               <TouchableOpacity onPress={pickImage}>
                 {image ? (
@@ -276,7 +296,7 @@ export default function AddActivity() {
 
               {isDatePickerVisible && (
                 <DateTimePicker
-                  value={date || values.date} // Use state or formik value
+                  value={date || new Date()} // Use state or formik value
                   mode={'date'}
                   timeZoneName={'America/Costa_Rica'}
                   minimumDate={new Date()}
@@ -300,7 +320,7 @@ export default function AddActivity() {
 
               {isTimePickerVisible && (
                 <RNDateTimePicker
-                  value={time || values.time} // Use state or formik value
+                  value={time || new Date()} // Use state or formik value
                   mode={'time'}
                   timeZoneName={'America/Costa_Rica'}
                   is24Hour={true} // Optional: Set to true for 24-hour format

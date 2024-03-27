@@ -1,7 +1,8 @@
-import { View, Text, ActivityIndicator } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Text, View } from 'react-native';
+import { auth, db } from '../../firebaseConfig';
 import { collection, getDocs, query, where } from 'firebase/firestore';
-import { db, auth } from '../../firebaseConfig';
+import { useEffect, useState } from 'react';
+
 import LatestActivityList from '../Components/HomeScreen/LatestActivityList';
 
 export default function MyActivities() {

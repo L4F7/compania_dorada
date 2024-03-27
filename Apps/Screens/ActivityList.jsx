@@ -1,9 +1,10 @@
-import { View, Text, ActivityIndicator } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { useRoute } from '@react-navigation/native';
-import { db } from '../../firebaseConfig';
-import { getDocs, collection, where, query } from 'firebase/firestore';
+import { ActivityIndicator, View } from 'react-native';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
+
 import LatestActivityList from '../Components/HomeScreen/LatestActivityList';
+import { db } from '../../firebaseConfig';
+import { useRoute } from '@react-navigation/native';
 
 export default function ActivityList() {
   const [activityList, setActivityList] = useState([]);

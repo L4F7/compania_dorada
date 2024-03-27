@@ -1,22 +1,21 @@
 import {
-  View,
-  Text,
-  Image,
-  TextInput,
   Alert,
+  Image,
   KeyboardAvoidingView,
   ScrollView,
+  Text,
+  TextInput,
+  View,
 } from 'react-native';
-import React, { useEffect } from 'react';
-import { auth, storeData, getData } from '../../firebaseConfig';
+import { auth, getData, storeData } from '../../firebaseConfig';
 import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
   onAuthStateChanged,
+  signInWithEmailAndPassword,
 } from 'firebase/auth';
-import { useNavigation } from '@react-navigation/core';
+
 import Button from '../Components/Button';
-import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+import { useEffect } from 'react';
+import { useNavigation } from '@react-navigation/core';
 
 export default function LoginScreen() {
   const [email, setEmail] = React.useState('');
@@ -24,21 +23,8 @@ export default function LoginScreen() {
 
   const navigation = useNavigation();
 
-  const validatePassword = () => {
-    if (password.length < 6) {
-      Alert.alert('La contraseña debe tener al menos 6 caracteres');
-      return false;
-    }
-    return true;
-  };
-
   const handleSignUp = () => {
-    if (!validatePassword()) return;
-
-    createUserWithEmailAndPassword(auth, email, password).catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-    });
+    navigation.replace('Register');
   };
 
   const handleLogin = () => {
@@ -101,7 +87,7 @@ export default function LoginScreen() {
             bgColor={'blue-500'}
           />
           <Button
-            title={'Registrarse'}
+            title={'Crear cuenta'}
             onPress={handleSignUp}
             bgColor={'blue-500'}
           />

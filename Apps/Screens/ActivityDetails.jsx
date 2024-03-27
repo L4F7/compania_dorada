@@ -1,28 +1,29 @@
 import {
-  View,
-  Text,
+  Alert,
   Image,
   ScrollView,
-  TouchableOpacity,
   Share,
-  Alert,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { useRoute } from '@react-navigation/native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { FontAwesome5 } from '@expo/vector-icons';
-import { auth, db } from '../../firebaseConfig';
 import {
-  getDocs,
   addDoc,
-  deleteDoc,
-  updateDoc,
-  query,
   collection,
+  deleteDoc,
+  getDocs,
+  query,
+  updateDoc,
   where,
 } from 'firebase/firestore';
-import { useNavigation } from '@react-navigation/native';
+import { auth, db } from '../../firebaseConfig';
+import { useEffect, useState } from 'react';
+
 import Button from '../Components/Button';
+import { FontAwesome5 } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 
 export default function ActivityDetails({ navigation }) {
   const { params } = useRoute();
@@ -264,14 +265,6 @@ export default function ActivityDetails({ navigation }) {
       <View className=" pl-3 pr-3 mb-5">
         {user.email !== activity.userEmail ? (
           subscribed ? (
-            // <TouchableOpacity
-            //   className=" bg-red-500 w-full p-3 rounded-full mt-3"
-            //   onPress={unsubscribeToActivity}
-            // >
-            //   <Text className="text-center text-white font-bold text-[20px]">
-            //     Cancelar participación
-            //   </Text>
-            // </TouchableOpacity>
             <Button 
               title={'Cancelar participación'}
               onPress={unsubscribeToActivity}
@@ -279,14 +272,6 @@ export default function ActivityDetails({ navigation }) {
               width={'w-full'}
             />
           ) : (
-            // <TouchableOpacity
-            //   className=" bg-blue-500 w-full p-3 rounded-full mt-3"
-            //   onPress={subscribeToActivity}
-            // >
-            //   <Text className="text-center text-white font-bold text-[20px]">
-            //     ¡Participar!
-            //   </Text>
-            // </TouchableOpacity>
             <Button 
               title={'¡Participar!'}
               onPress={subscribeToActivity}
@@ -295,21 +280,11 @@ export default function ActivityDetails({ navigation }) {
             />
           )
         ) : (
-          // <TouchableOpacity
-          //   className=" bg-red-500 w-full p-3 rounded-full mt-3"
-          //   onPress={deleteUserActivity}
-          // >
-          //   <Text className="text-center text-white font-bold text-[20px]">
-          //     Eliminar actividad
-          //   </Text>
-          // </TouchableOpacity>
           <Button 
             title={'Eliminar actividad'}
             onPress={deleteUserActivity}
             bgColor={'red-500'}
             width={'w-full'}
-            //testear con className
-            //className="mt-3"
           />
         )}
       </View>

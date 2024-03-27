@@ -1,5 +1,5 @@
-import { View, Text, TouchableOpacity, Image } from 'react-native';
-import React, { useEffect } from 'react';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
+
 import { useNavigation } from '@react-navigation/native';
 
 export default function ActivityItem({ item }) {

@@ -1,9 +1,9 @@
 import {
-  View,
-  Text,
   FlatList,
+  Text,
+  View,
 } from 'react-native';
-import React from 'react';
+
 import ActivityItem from './ActivityItem';
 
 export default function LatestActivityList({ latestActivityList, heading }) {

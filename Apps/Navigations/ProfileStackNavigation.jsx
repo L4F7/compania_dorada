@@ -1,9 +1,7 @@
-import { View, Text } from 'react-native'
-import React from 'react'
-import { createStackNavigator } from '@react-navigation/stack';
-import ProfileScreen from '../Screens/ProfileScreen';
-import MyActivities from '../Screens/MyActivities';
 import ActivityDetails from '../Screens/ActivityDetails';
+import MyActivities from '../Screens/MyActivities';
+import ProfileScreen from '../Screens/ProfileScreen';
+import { createStackNavigator } from '@react-navigation/stack';
 
 const Stack = createStackNavigator();
 

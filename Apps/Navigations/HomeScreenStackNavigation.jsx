@@ -1,9 +1,7 @@
-import { View, Text } from 'react-native';
-import React from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
-import HomeScreen from '../Screens/HomeScreen';
-import ActivityList from '../Screens/ActivityList';
 import ActivityDetails from '../Screens/ActivityDetails';
+import ActivityList from '../Screens/ActivityList';
+import HomeScreen from '../Screens/HomeScreen';
+import { createStackNavigator } from '@react-navigation/stack';
 
 const Stack = createStackNavigator();
 

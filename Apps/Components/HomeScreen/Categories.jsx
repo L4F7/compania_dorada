@@ -1,12 +1,12 @@
 import {
-  View,
-  Text,
+  ActivityIndicator,
   FlatList,
   Image,
+  Text,
   TouchableOpacity,
-  ActivityIndicator,
+  View,
 } from 'react-native';
-import React from 'react';
+
 import { useNavigation } from '@react-navigation/native';
 
 export default function Categories({ categoryList }) {

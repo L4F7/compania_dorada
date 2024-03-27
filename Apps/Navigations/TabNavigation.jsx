@@ -1,8 +1,7 @@
-import React from 'react';
 import AddActivityScreen from '../Screens/AddActivityScreen';
-import HomeScreenStackNavigation from './HomeScreenStackNavigation';
-import { FontAwesome5 } from '@expo/vector-icons';
 import ExploreScreenStackNavigation from './ExploreScreenStackNavigation';
+import { FontAwesome5 } from '@expo/vector-icons';
+import HomeScreenStackNavigation from './HomeScreenStackNavigation';
 import ProfileStackNavigation from './ProfileStackNavigation';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 
@@ -45,7 +44,7 @@ export default function TabNavigation() {
       options={{ headerShown: false }}
       inactiveColor="#ffffff"
       activeColor="#ffffff"
-      shifting={true}
+      shifting={true} // Hide labels when not active
       barStyle={{ backgroundColor: '#0073e6'}}
       activeIndicatorStyle={{ 
         backgroundColor: 'transparent',
@@ -55,14 +54,13 @@ export default function TabNavigation() {
     >
       {tabArray.map((tab, index) => (
         <Tab.Screen
-          height={30}
           key={index}
           name={tab.name}
           component={tab.component}
           options={{
             tabBarLabel: tab.title,
             tabBarIcon: ({ color, focused }) => (
-              <FontAwesome5 name={tab.icon} size={focused ? 30 : 24} color={color} />
+              <FontAwesome5 name={tab.icon} size={focused ? 26 : 24} color={color} />
             ),
           }}
         />

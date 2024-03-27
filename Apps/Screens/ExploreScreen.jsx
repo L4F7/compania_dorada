@@ -1,8 +1,9 @@
-import { ScrollView, Text, ActivityIndicator, View } from 'react-native';
-import React, { useState, useEffect, useCallback } from 'react';
-import { db } from '../../firebaseConfig';
-import { getDocs, collection, orderBy } from 'firebase/firestore';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import { collection, getDocs, orderBy } from 'firebase/firestore';
+import { useCallback, useEffect, useState } from 'react';
+
 import LatestActivityList from '../Components/HomeScreen/LatestActivityList';
+import { db } from '../../firebaseConfig';
 import { useFocusEffect } from '@react-navigation/native';
 
 export default function ExploreScreen() {
