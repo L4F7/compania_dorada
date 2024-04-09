@@ -270,6 +270,8 @@ export default function ActivityDetails({ navigation }) {
               onPress={unsubscribeToActivity}
               bgColor={'red-500'}
               width={'w-full'}
+              disabled={Date.now() > new Date(activity.date)}
+
             />
           ) : (
             <Button 
@@ -277,6 +279,7 @@ export default function ActivityDetails({ navigation }) {
               onPress={subscribeToActivity}
               bgColor={'blue-500'}
               width={'w-full'}
+              disabled={totalParticipants >= activity.maxParticipants || Date.now() > new Date(activity.date)}
             />
           )
         ) : (

@@ -8,18 +8,16 @@ import {
   View,
 } from 'react-native';
 import { auth, getData, storeData } from '../../firebaseConfig';
-import {
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-} from 'firebase/auth';
+import { onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth';
 
 import Button from '../Components/Button';
 import { useEffect } from 'react';
 import { useNavigation } from '@react-navigation/core';
+import { useState } from 'react';
 
 export default function LoginScreen() {
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const navigation = useNavigation();
 
