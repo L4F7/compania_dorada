@@ -2,8 +2,6 @@ import { Text, TouchableOpacity } from 'react-native'
 
 export default function Button({ onPress, title, bgColor, width = '', disabled = false}) {
 
-  title = disabled ? 'Actividad no disponible' : title
-
   const style = `bg-${bgColor} p-4 rounded-full mt-4 ${width}`
 
   return (

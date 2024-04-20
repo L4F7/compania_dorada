@@ -226,6 +226,13 @@ export default function ActivityDetails({ navigation }) {
       `${day} de ${months[month]} del ${year} a las ${newTime}`
     );
   };
+
+  const isOldActivity = () => {
+    const date = new Date(activity.date);
+    const currentDate = new Date();
+    return date < currentDate;
+  }
+  
   return (
     <ScrollView>
       <Image className="h-[350px] w-full" source={{ uri: activity.image }} />
@@ -266,29 +273,40 @@ export default function ActivityDetails({ navigation }) {
         {user.email !== activity.userEmail ? (
           subscribed ? (
             <Button 
-              title={'Cancelar participación'}
+              title={isOldActivity()? 'Actividad no disponible' : 'Cancelar participación'}
               onPress={unsubscribeToActivity}
-              bgColor={'red-500'}
+              //bgColor={'red-500'}
+              bgColor={'blue-500'}
               width={'w-full'}
-              disabled={Date.now() > new Date(activity.date)}
+              disabled={isOldActivity()}
 
             />
           ) : (
             <Button 
-              title={'¡Participar!'}
+              title={isOldActivity()? 'Actividad no disponible' : '¡Participar!'}
               onPress={subscribeToActivity}
               bgColor={'blue-500'}
               width={'w-full'}
-              disabled={totalParticipants >= activity.maxParticipants || Date.now() > new Date(activity.date)}
+              disabled={totalParticipants >= activity.maxParticipants || isOldActivity()}
             />
           )
         ) : (
-          <Button 
-            title={'Eliminar actividad'}
-            onPress={deleteUserActivity}
-            bgColor={'red-500'}
-            width={'w-full'}
-          />
+          <View>
+            <Button 
+              title={'Editar actividad'}
+              onPress={() => nav.push('edit-activity', { activity: activity })}
+              bgColor={'blue-500'}
+              width={'w-full'}
+              disabled = {activity.currentParticipants > 0}
+            />
+            <Button 
+              title={'Cancelar actividad'}
+              onPress={deleteUserActivity}
+              //bgColor={'red-500'}
+              bgColor={'blue-500'}
+              width={'w-full'}
+            />
+          </View>
         )}
       </View>
     </ScrollView>

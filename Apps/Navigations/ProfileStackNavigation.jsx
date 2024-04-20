@@ -1,4 +1,5 @@
 import ActivityDetails from '../Screens/ActivityDetails';
+import EditActivityScreen from '../Screens/EditActivityScreen';
 import MyActivities from '../Screens/MyActivities';
 import ProfileScreen from '../Screens/ProfileScreen';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -23,6 +24,13 @@ export default function ProfileStackNavigation() {
         component={ActivityDetails}
         options={{
           headerTitle: 'Detalles de la actividad',
+        }}
+      />
+      <Stack.Screen
+        name="edit-activity"
+        component={EditActivityScreen}
+        options={{
+          headerTitle: 'Editar actividad',
         }}
       />
     </Stack.Navigator>

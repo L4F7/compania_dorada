@@ -5,6 +5,7 @@ import {
   ScrollView,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import { auth, getData, storeData } from '../../firebaseConfig';

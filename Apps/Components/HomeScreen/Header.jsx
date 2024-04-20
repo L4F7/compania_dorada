@@ -20,8 +20,9 @@ export default function Header() {
           <Text className="text-[25px] font-bold">{user.email.split("@").at(0)}</Text>
         </View>
       </View>
-
-      {/* Search bar */}
+      
+      
+      {/* Search bar 
 
       <View
         className="p-4 px-5 flex flex-row items-center
@@ -34,6 +35,8 @@ export default function Header() {
           onChangeText={(value) => console.log(value)}
         />
       </View>
+
+      */}
     </View>
   );
 }
