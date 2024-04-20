@@ -18,7 +18,6 @@ import { auth, db } from '../../firebaseConfig';
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import { useEffect, useState } from 'react';
 
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { Formik } from 'formik';
 import { Picker } from '@react-native-picker/picker';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
@@ -253,33 +252,47 @@ export default function AddActivity() {
                   />
                 )}
               </TouchableOpacity>
+
+              {/** Title section --------------------------------------------------------------------------------------------*/}
               <TextInput
                 style={styles.input}
                 placeholder="Titulo"
                 value={values?.title}
+                multiline = {true}
+                numberOfLines = {1}
                 onChangeText={handleChange('title')}
               ></TextInput>
+
+              {/** Description section --------------------------------------------------------------------------------------*/}
               <TextInput
                 style={styles.input}
                 placeholder="Descripción"
                 value={values?.description}
-                numberOfLines={5}
+                multiline = {true}
+                numberOfLines = {4}
                 onChangeText={handleChange('description')}
               ></TextInput>
+
+              {/** Location section -----------------------------------------------------------------------------------------*/}
               <TextInput
                 style={styles.input}
                 placeholder="Ubicación"
                 value={values?.location}
+                multiline = {true}
+                numberOfLines = {1}
                 onChangeText={handleChange('location')}
               ></TextInput>
+
+              {/** Max participants section ---------------------------------------------------------------------------------*/}
               <TextInput
                 style={styles.input}
                 keyboardType="numeric"
-                value={values?.maxParticipants}
-                placeholder="Numero de participantes"
+                value={values?.maxParticipants.toString()}
+                placeholder="Número de participantes"
                 onChangeText={handleChange('maxParticipants')}
               />
 
+              {/** Date picker section --------------------------------------------------------------------------------------*/}
               <TouchableOpacity
                 onPress={() => {
                   setIsDatePickerVisible(true);
@@ -295,7 +308,7 @@ export default function AddActivity() {
               </TouchableOpacity>
 
               {isDatePickerVisible && (
-                <DateTimePicker
+                <RNDateTimePicker
                   value={date || new Date()} // Use state or formik value
                   mode={'date'}
                   timeZoneName={'America/Costa_Rica'}
@@ -304,6 +317,7 @@ export default function AddActivity() {
                 />
               )}
 
+              {/** Time picker section --------------------------------------------------------------------------------------*/}
               <TouchableOpacity
                 onPress={() => {
                   setIsTimePickerVisible(true);
@@ -328,6 +342,7 @@ export default function AddActivity() {
                 />
               )}
 
+              {/** Category picker section -----------------------------------------------------------------------------------*/}
               <View style={{ borderWidth: 1, borderRadius: 10, marginTop: 15 }}>
                 <Picker
                   selectedValue={values?.category}
@@ -346,6 +361,8 @@ export default function AddActivity() {
                     ))}
                 </Picker>
               </View>
+
+              {/** Submit button section ------------------------------------------------------------------------------------*/}
               <TouchableOpacity
                 onPress={handleSubmit}
                 className="p-3 bg-blue-500 rounded-full mt-5 mb-14"

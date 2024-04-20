@@ -1,4 +1,5 @@
 import ActivityDetails from '../Screens/ActivityDetails';
+import EditActivityScreen from '../Screens/EditActivityScreen';
 import ExploreScreen from '../Screens/ExploreScreen';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -19,6 +20,13 @@ export default function ExploreScreenStackNavigation() {
         component={ActivityDetails}
         options={{
           headerTitle: 'Detalles de la actividad',
+        }}
+      />
+      <Stack.Screen
+        name="edit-activity"
+        component={EditActivityScreen}
+        options={{
+          headerTitle: 'Editar actividad',
         }}
       />
     </Stack.Navigator>

@@ -1,5 +1,6 @@
 import ActivityDetails from '../Screens/ActivityDetails';
 import ActivityList from '../Screens/ActivityList';
+import EditActivityScreen from '../Screens/EditActivityScreen';
 import HomeScreen from '../Screens/HomeScreen';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -31,6 +32,13 @@ export default function HomeScreenStackNavigation() {
         component={ActivityDetails}
         options={{
           headerTitle: 'Detalles de la actividad',
+        }}
+      />
+      <Stack.Screen
+        name="edit-activity"
+        component={EditActivityScreen}
+        options={{
+          headerTitle: 'Editar actividad',
         }}
       />
     </Stack.Navigator>

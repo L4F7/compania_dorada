@@ -1,4 +1,3 @@
-import * as Crypto from 'expo-crypto';
 import * as ImagePicker from 'expo-image-picker';
 
 import {
@@ -13,20 +12,19 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { auth, db } from '../../firebaseConfig';
-import { collection, getDocs, updateDoc } from 'firebase/firestore';
+import { collection, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import { useEffect, useState } from 'react';
 
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { Formik } from 'formik';
 import { Picker } from '@react-native-picker/picker';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
+import { db } from '../../firebaseConfig';
 import { useRoute } from '@react-navigation/native';
 
 export default function EditActivityScreen() {
+  const { params } = useRoute();
 
-  const { params } = useRoute();  
   const [activity, setActivity] = useState({});
 
   const [categoryList, setCategoryList] = useState([]);
@@ -40,12 +38,12 @@ export default function EditActivityScreen() {
 
   const [updating, setUpdating] = useState(false);
 
-  const user = auth.currentUser;
   const storage = getStorage();
 
   useEffect(() => {
     if (params) {
       setActivity(params.activity);
+      
       setDate(new Date(params.activity.date));
 
       const originalDateString = params.activity.date;
@@ -53,12 +51,10 @@ export default function EditActivityScreen() {
       const newDateString = `${datePart}T${params.activity.time}.000Z`;
 
       setTime(new Date(newDateString));
-      
+
       setImage(params.activity.image);
     }
-
   }, [params]);
-
 
   const getCategoryList = async () => {
     try {
@@ -113,7 +109,6 @@ export default function EditActivityScreen() {
   };
 
   const onUpdateMethod = async (value) => {
-
     if (!validateImage()) return;
     if (!validateDate()) return;
     if (!validateTime()) return;
@@ -128,7 +123,7 @@ export default function EditActivityScreen() {
     const storageRef = ref(storage, `communityPost/${Date.now()}.jpg`);
 
     // Hacer todo dentro de una transacción
-    if(image !== activity.image) {
+    if (image !== activity.image) {
       await uploadBytes(storageRef, blob);
       const url = await getDownloadURL(storageRef);
       value.image = url;
@@ -165,19 +160,18 @@ export default function EditActivityScreen() {
     const q = query(collection(db, 'UserPost'), where('id', '==', activity.id));
 
     const querySnapshot = await getDocs(q);
-    
+
     querySnapshot.forEach((doc) => {
-
-      updateDoc(doc.ref, activity).then(() => {
-        Alert.alert('¡Felicidades!', 'Actividad actualizada');
-      }).catch((error) => {
-        Alert.alert('Error', 'Error al actualizar la actividad');
-      });
-
+      updateDoc(doc.ref, activity)
+        .then(() => {
+          Alert.alert('¡Felicidades!', 'Actividad actualizada');
+        })
+        .catch((error) => {
+          Alert.alert('Error', 'Error al actualizar la actividad');
+        });
     });
 
     setUpdating(false);
-    
   };
 
   const handleDatePickerChange = (event, selectedDate) => {
@@ -193,17 +187,21 @@ export default function EditActivityScreen() {
   };
 
   const formatTime = (time) => {
-
     console.log('------------------------------------------');
+
+
+    // Arreglar el formato de la hora
+
+
     console.log('\nTime:', time);
 
     let hours = time.split(':')[0];
     let minutes = time.split(':')[1];
     let formatedTime =
       hours > 12 ? `${hours - 12}:${minutes} PM` : `${hours}:${minutes} AM`;
-    
+
     console.log('Formated time:', formatedTime);
-    
+
     return formatedTime;
   };
 
@@ -228,8 +226,6 @@ export default function EditActivityScreen() {
     const month = newDate[1];
     const day = newDate[2];
 
-    //console.log('New date:', newDate);
-
     return `${day} de ${months[month]} del ${year}`;
   };
 
@@ -242,15 +238,14 @@ export default function EditActivityScreen() {
         <Formik
           initialValues={{
             id: '',
-            title: '',
-            description: '',
-            category: '',
-            location: '',
+            title: params?.activity?.title,
+            description: params?.activity?.description,
+            category: params?.activity?.category,
+            location: params?.activity?.location,
             image: '',
-            userEmail: '',
-            createdAt: '',
-            maxParticipants: '',
-            currentParticipants: '',
+            userEmail: params?.activity?.userEmail,
+            createdAt: params?.activity?.createdAt,
+            maxParticipants: params?.activity?.maxParticipants.toString(),
           }}
           onSubmit={(value) => onUpdateMethod(value)}
           validateOnBlur={false}
@@ -279,7 +274,6 @@ export default function EditActivityScreen() {
         >
           {({ handleChange, handleSubmit, setFieldValue, values }) => (
             <View>
-              <Text className="text-[20px] font-bold mt-5 pb-2" style={{alignSelf: 'center'}}>Imagen</Text>
               <TouchableOpacity onPress={pickImage}>
                 {image ? (
                   <Image
@@ -303,37 +297,54 @@ export default function EditActivityScreen() {
                   />
                 )}
               </TouchableOpacity>
-              <Text className="text-[20px] font-bold mt-5">Titulo</Text>
+
+              {/** Title section --------------------------------------------------------------------------------------------*/}
+              <Text className="text-[20px] font-bold mt-3">Titulo</Text>
               <TextInput
                 style={styles.input}
                 placeholder="Titulo"
-                value={activity?.title}
-                //onChangeText={handleChange('title')}
+                value={values?.title}
+                multiline = {true}
+                numberOfLines = {2}
+                onChangeText={handleChange('title')}
               ></TextInput>
-              <Text className="text-[20px] font-bold mt-5">Descripción</Text>
+
+              {/** Description section --------------------------------------------------------------------------------------*/}
+              <Text className="text-[20px] font-bold mt-3">Descripción</Text>
               <TextInput
                 style={styles.input}
                 placeholder="Descripción"
-                value={activity?.description}
-                numberOfLines={5}
+                value={values?.description}
+                multiline = {true}
+                numberOfLines = {4}
                 onChangeText={handleChange('description')}
               ></TextInput>
-              <Text className="text-[20px] font-bold mt-5">Ubicación</Text>
+
+              {/** Location section -----------------------------------------------------------------------------------------*/}
+              <Text className="text-[20px] font-bold mt-3">Ubicación</Text>
               <TextInput
                 style={styles.input}
                 placeholder="Ubicación"
-                value={activity?.location}
+                value={values?.location}
+                multiline = {true}
+                numberOfLines = {2}
                 onChangeText={handleChange('location')}
               ></TextInput>
-              <Text className="text-[20px] font-bold mt-5"> Numero de participantes</Text>
+
+              {/** Max participants section ---------------------------------------------------------------------------------*/}
+              <Text className="text-[20px] font-bold mt-3">Número de participantes</Text>
               <TextInput
                 style={styles.input}
                 keyboardType="numeric"
-                value={activity?.maxParticipants?.toString()}
+                value={values?.maxParticipants.toString()}
                 placeholder="Numero de participantes"
                 onChangeText={handleChange('maxParticipants')}
               />
-              <Text className="text-[20px] font-bold mt-5">Fecha y hora</Text>
+              
+              {/** Date and time section ------------------------------------------------------------------------------------*/}
+              <Text className="text-[20px] font-bold mt-3">Fecha y hora</Text>
+
+              {/** Date picker section ------------------------------------------------------------*/}
               <TouchableOpacity
                 onPress={() => {
                   setIsDatePickerVisible(true);
@@ -349,7 +360,7 @@ export default function EditActivityScreen() {
               </TouchableOpacity>
 
               {isDatePickerVisible && (
-                <DateTimePicker
+                <RNDateTimePicker
                   value={date || new Date()} // Use state or formik value
                   mode={'date'}
                   timeZoneName={'America/Costa_Rica'}
@@ -358,6 +369,7 @@ export default function EditActivityScreen() {
                 />
               )}
 
+              {/** Time picker section ------------------------------------------------------------*/}
               <TouchableOpacity
                 onPress={() => {
                   setIsTimePickerVisible(true);
@@ -367,7 +379,7 @@ export default function EditActivityScreen() {
               >
                 <Text className="text-[17px]">
                   {time
-                    ? formatTime(time.toISOString().split('T')[1])
+                    ? formatTime(time.toTimeString().split(' ')[0])
                     : 'Seleccionar hora'}
                 </Text>
               </TouchableOpacity>
@@ -382,7 +394,8 @@ export default function EditActivityScreen() {
                 />
               )}
 
-              <Text className="text-[20px] font-bold mt-5">Categoría</Text>
+              {/** Category picker section -----------------------------------------------------------------------------------*/}
+              <Text className="text-[20px] font-bold mt-3">Categoría</Text>
               <View style={{ borderWidth: 1, borderRadius: 10, marginTop: 15 }}>
                 <Picker
                   selectedValue={values?.category}
@@ -401,17 +414,19 @@ export default function EditActivityScreen() {
                     ))}
                 </Picker>
               </View>
+
+              {/** Submit button section ------------------------------------------------------------------------------------*/}
               <TouchableOpacity
                 onPress={handleSubmit}
-                className="p-3 bg-blue-500 rounded-full mt-5 mb-14"
+                className="bg-blue-500 p-4 rounded-full mt-5 mb-14"
                 style={{ backgroundColor: updating ? '#ccc' : '#007BFF' }}
                 disabled={updating}
               >
                 {updating ? (
                   <ActivityIndicator color="#fff" />
                 ) : (
-                  <Text className="text-white text-center text-[18px]">
-                    Agregar
+                  <Text className="text-white font-bold text-center text-[18px]">
+                    Actualizar
                   </Text>
                 )}
               </TouchableOpacity>

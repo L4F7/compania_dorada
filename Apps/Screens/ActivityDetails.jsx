@@ -56,7 +56,7 @@ export default function ActivityDetails({ navigation }) {
   const shareActivity = async () => {
     try {
       await Share.share({
-        message: `¡Participa en esta actividad! ${activity.title} en ${activity.location}`,
+        message: `¡Participa en esta actividad! ${params?.activity?.title} en ${params?.activity?.location}`,
       });
     } catch (error) {
       console.log(error.message);
@@ -275,7 +275,6 @@ export default function ActivityDetails({ navigation }) {
             <Button 
               title={isOldActivity()? 'Actividad no disponible' : 'Cancelar participación'}
               onPress={unsubscribeToActivity}
-              //bgColor={'red-500'}
               bgColor={'blue-500'}
               width={'w-full'}
               disabled={isOldActivity()}
@@ -302,7 +301,6 @@ export default function ActivityDetails({ navigation }) {
             <Button 
               title={'Cancelar actividad'}
               onPress={deleteUserActivity}
-              //bgColor={'red-500'}
               bgColor={'blue-500'}
               width={'w-full'}
             />

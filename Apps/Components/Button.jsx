@@ -10,7 +10,7 @@ export default function Button({ onPress, title, bgColor, width = '', disabled =
       className={style}
       disabled={disabled}
     >
-      <Text className="text-white text-center text-[18px]">
+      <Text className="text-white font-bold text-center text-[18px]">
         {title}
       </Text>
     </TouchableOpacity>
