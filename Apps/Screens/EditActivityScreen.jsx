@@ -53,6 +53,9 @@ export default function EditActivityScreen() {
       setTime(new Date(newDateString));
 
       setImage(params.activity.image);
+
+      console.log('Date:', date);
+      console.log('Time:', time);
     }
   }, [params]);
 

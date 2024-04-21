@@ -1,8 +1,9 @@
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 import { collection, getDocs, orderBy } from 'firebase/firestore';
 import { useCallback, useEffect, useState } from 'react';
 
 import LatestActivityList from '../Components/HomeScreen/LatestActivityList';
+import { ScrollView } from 'react-native-virtualized-view'
 import { db } from '../../firebaseConfig';
 import { useFocusEffect } from '@react-navigation/native';
 

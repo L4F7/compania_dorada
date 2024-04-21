@@ -10,7 +10,7 @@ import { useCallback, useEffect, useState } from 'react';
 import Categories from '../Components/HomeScreen/Categories';
 import Header from '../Components/HomeScreen/Header';
 import LatestActivityList from '../Components/HomeScreen/LatestActivityList';
-import { ScrollView } from 'react-native';
+import { ScrollView } from 'react-native-virtualized-view'
 import { app } from '../../firebaseConfig';
 import { useFocusEffect } from '@react-navigation/native';
 
