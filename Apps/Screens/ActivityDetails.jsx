@@ -17,6 +17,7 @@ import {
   where,
 } from 'firebase/firestore';
 import { auth, db } from '../../firebaseConfig';
+import { deleteObject, getStorage, ref } from 'firebase/storage';
 import { useEffect, useState } from 'react';
 
 import Button from '../Components/Button';
@@ -109,7 +110,7 @@ export default function ActivityDetails({ navigation }) {
     const q = query(collection(db, 'UserPost'), where('id', '==', activity.id));
 
     const querySnapshot = await getDocs(q);
-    
+
     querySnapshot.forEach((doc) => {
       if (doc.data().currentParticipants < doc.data().maxParticipants) {
         updateDoc(doc.ref, {
@@ -152,7 +153,10 @@ export default function ActivityDetails({ navigation }) {
           Alert.alert('¡Listo!', 'Has cancelado tu participación');
         });
       } else {
-        Alert.alert('¡Lo sentimos!', 'No puedes cancelar tu participación en este momento');
+        Alert.alert(
+          '¡Lo sentimos!',
+          'No puedes cancelar tu participación en este momento'
+        );
       }
     });
   };
@@ -171,6 +175,7 @@ export default function ActivityDetails({ navigation }) {
           text: 'Eliminar',
           onPress: () => {
             deleteFromFirebase();
+            deleteFromStorage();
           },
         },
       ]
@@ -178,14 +183,42 @@ export default function ActivityDetails({ navigation }) {
   };
 
   const deleteFromFirebase = async () => {
-    const q = query(collection(db, 'UserPost'), where('id', '==', activity.id));
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
-      deleteDoc(doc.ref).then(() => {
-        console.log('Document successfully deleted!');
-        nav.goBack();
-      });
+    const q1 = query(
+      collection(db, 'UserPost'),
+      where('id', '==', activity.id)
+    );
+    const q2 = query(
+      collection(db, 'ActivityUserPost'),
+      where('postId', '==', activity.id)
+    );
+
+    const querySnapshot1 = await getDocs(q1);
+    const querySnapshot2 = await getDocs(q2);
+
+    querySnapshot1.forEach((doc) => {
+      deleteDoc(doc.ref)
     });
+
+    querySnapshot2.forEach((doc) => {
+      deleteDoc(doc.ref)
+    });
+
+    Alert.alert('¡Listo!', 'Actividad eliminada correctamente');
+    nav.goBack();
+  };
+
+  const deleteFromStorage = async () => {
+    const storageRef = ref(
+      getStorage(),
+      `communityPost/${activity.createdAt + activity.userEmail}.jpg`
+    );
+    deleteObject(storageRef)
+      .then(() => {
+        console.log('Image successfully deleted!');
+      })
+      .catch((error) => {
+        console.log('Error deleting image: ', error);
+      });
   };
 
   const formatTime = (time) => {
@@ -231,8 +264,8 @@ export default function ActivityDetails({ navigation }) {
     const date = new Date(activity.date);
     const currentDate = new Date();
     return date < currentDate;
-  }
-  
+  };
+
   return (
     <ScrollView>
       <Image className="h-[350px] w-full" source={{ uri: activity.image }} />
@@ -241,8 +274,7 @@ export default function ActivityDetails({ navigation }) {
         <View className="items-baseline">
           <Text
             className=" text-blue-500 font-bold bg-blue-200 p-1 mt-1
-            rounded-full px-2 text-[15px]"
-          >
+            rounded-full px-2 text-[15px]">
             {activity.category}
           </Text>
         </View>
@@ -272,36 +304,43 @@ export default function ActivityDetails({ navigation }) {
       <View className=" pl-3 pr-3 mb-5">
         {user.email !== activity.userEmail ? (
           subscribed ? (
-            <Button 
-              title={isOldActivity()? 'Actividad no disponible' : 'Cancelar participación'}
+            <Button
+              title={
+                isOldActivity()
+                  ? 'Actividad no disponible'
+                  : 'Cancelar participación'
+              }
               onPress={unsubscribeToActivity}
-              bgColor={'blue-500'}
+              bgColor={'#ef4444'}
               width={'w-full'}
               disabled={isOldActivity()}
-
             />
           ) : (
-            <Button 
-              title={isOldActivity()? 'Actividad no disponible' : '¡Participar!'}
+            <Button
+              title={
+                isOldActivity() ? 'Actividad no disponible' : '¡Participar!'
+              }
               onPress={subscribeToActivity}
-              bgColor={'blue-500'}
+              bgColor={'#3b82f6'}
               width={'w-full'}
-              disabled={totalParticipants >= activity.maxParticipants || isOldActivity()}
+              disabled={
+                totalParticipants >= activity.maxParticipants || isOldActivity()
+              }
             />
           )
         ) : (
           <View>
-            <Button 
+            <Button
               title={'Editar actividad'}
               onPress={() => nav.push('edit-activity', { activity: activity })}
-              bgColor={'blue-500'}
+              bgColor={'#3b82f6'}
               width={'w-full'}
-              disabled = {activity.currentParticipants > 0}
+              disabled={activity.currentParticipants > 0}
             />
-            <Button 
+            <Button
               title={'Cancelar actividad'}
               onPress={deleteUserActivity}
-              bgColor={'blue-500'}
+              bgColor={'#ef4444'}
               width={'w-full'}
             />
           </View>

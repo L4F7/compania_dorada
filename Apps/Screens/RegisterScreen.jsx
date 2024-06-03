@@ -122,12 +122,12 @@ export default function RegisterScreen() {
           <Button
             title={'Registrar cuenta'}
             onPress={handleSignUp}
-            bgColor={'blue-500'}
+            bgColor={'#3b82f6'}
           />
           <Button
             title={'Regresar a iniciar sesión'}
             onPress={handleLogin}
-            bgColor={'blue-500'}
+            bgColor={'#3b82f6'}
           />
         </View>
       </ScrollView>

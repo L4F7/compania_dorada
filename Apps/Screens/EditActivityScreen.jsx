@@ -13,7 +13,7 @@ import {
   View,
 } from 'react-native';
 import { collection, getDocs, query, updateDoc, where } from 'firebase/firestore';
-import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
+import { deleteObject, getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import { useEffect, useState } from 'react';
 
 import { Formik } from 'formik';
@@ -87,6 +87,17 @@ export default function EditActivityScreen() {
     }
   };
 
+  const deleteFromStorage = async () => {
+    const storageRef = ref(getStorage(), `communityPost/${activity.createdAt + activity.userEmail}.jpg`);
+    deleteObject(storageRef)
+      .then(() => {
+        console.log('Image successfully deleted!');
+      })
+      .catch((error) => {
+        console.log('Error deleting image: ', error);
+      });
+  }
+
   const validateImage = () => {
     if (!image) {
       Alert.alert('Error', 'Imagen no seleccionada');
@@ -123,13 +134,14 @@ export default function EditActivityScreen() {
     // Converts the URI into a Blob file
     const response = await fetch(image);
     const blob = await response.blob();
-    const storageRef = ref(storage, `communityPost/${Date.now()}.jpg`);
+    const storageRef = ref(storage, `communityPost/${params.activity.createdAt + params.activity.userEmail}.jpg`);
 
     // Hacer todo dentro de una transacción
     if (image !== activity.image) {
+      await deleteFromStorage();
       await uploadBytes(storageRef, blob);
       const url = await getDownloadURL(storageRef);
-      value.image = url;
+      activity.image = url;
     }
 
     if (value.title !== activity.title) {
@@ -171,18 +183,18 @@ export default function EditActivityScreen() {
         })
         .catch((error) => {
           Alert.alert('Error', 'Error al actualizar la actividad');
+        }).finally(() => {
+          setUpdating(false);
         });
     });
-
-    setUpdating(false);
   };
 
   const handleDatePickerChange = (event, selectedDate) => {
+    selectedDate.setDate(selectedDate.getDate() - 1);
     const currentDate = selectedDate || date;
     setIsDatePickerVisible(false);
     setDate(currentDate);
   };
-
   const handleTimePickerChange = (event, selectedTime) => {
     const currentTime = selectedTime || time;
     setIsTimePickerVisible(false);
@@ -190,25 +202,17 @@ export default function EditActivityScreen() {
   };
 
   const formatTime = (time) => {
-    console.log('------------------------------------------');
-
-
-    // Arreglar el formato de la hora
-
-
-    console.log('\nTime:', time);
 
     let hours = time.split(':')[0];
     let minutes = time.split(':')[1];
     let formatedTime =
       hours > 12 ? `${hours - 12}:${minutes} PM` : `${hours}:${minutes} AM`;
 
-    console.log('Formated time:', formatedTime);
-
     return formatedTime;
   };
 
   const formatDate = (date) => {
+
     const months = {
       '01': 'Enero',
       '02': 'Febrero',
@@ -422,7 +426,7 @@ export default function EditActivityScreen() {
               <TouchableOpacity
                 onPress={handleSubmit}
                 className="bg-blue-500 p-4 rounded-full mt-5 mb-14"
-                style={{ backgroundColor: updating ? '#ccc' : '#007BFF' }}
+                style={{ backgroundColor: updating ? '#ccc' : '#3b82f6' }}
                 disabled={updating}
               >
                 {updating ? (

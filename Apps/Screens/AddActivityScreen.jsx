@@ -98,10 +98,12 @@ export default function AddActivity() {
 
     setUploading(true);
 
+    const creationDate = new Date().toISOString();
+
     // Converts the URI into a Blob file
     const response = await fetch(image);
     const blob = await response.blob();
-    const storageRef = ref(storage, `communityPost/${Date.now()}.jpg`);
+    const storageRef = ref(storage, `communityPost/${creationDate+user.email}.jpg`);
 
     uploadBytes(storageRef, blob)
       .then((snapshot) => {
@@ -111,7 +113,7 @@ export default function AddActivity() {
         getDownloadURL(storageRef).then(async (downloadUrl) => {
           value.image = downloadUrl;
           value.userEmail = user.email;
-          value.createdAt = new Date().toISOString();
+          value.createdAt = creationDate;
           value.date = date.toISOString().split('T')[0];
           value.time = time.toTimeString().split(' ')[0];
           value.maxParticipants = parseInt(value.maxParticipants);
@@ -139,6 +141,7 @@ export default function AddActivity() {
   };
 
   const handleDatePickerChange = (event, selectedDate) => {
+    selectedDate.setDate(selectedDate.getDate());
     const currentDate = selectedDate || date;
     setIsDatePickerVisible(false);
     setDate(currentDate);
@@ -151,14 +154,17 @@ export default function AddActivity() {
   };
 
   const formatTime = (time) => {
+
     let hours = time.split(':')[0];
     let minutes = time.split(':')[1];
     let formatedTime =
       hours > 12 ? `${hours - 12}:${minutes} PM` : `${hours}:${minutes} AM`;
+      
     return formatedTime;
   };
 
   const formatDate = (date) => {
+    
     const months = {
       '01': 'Enero',
       '02': 'Febrero',
