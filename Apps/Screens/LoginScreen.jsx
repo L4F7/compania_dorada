@@ -83,12 +83,12 @@ export default function LoginScreen() {
           <Button
             title={'Iniciar sesión'}
             onPress={handleLogin}
-            bgColor={'blue-500'}
+            bgColor={'#3b82f6'}
           />
           <Button
             title={'Crear cuenta'}
             onPress={handleSignUp}
-            bgColor={'blue-500'}
+            bgColor={'#3b82f6'}
           />
         </View>
       </ScrollView>
