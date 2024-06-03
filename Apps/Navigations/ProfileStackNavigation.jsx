@@ -1,6 +1,7 @@
 import ActivityDetails from '../Screens/ActivityDetails';
 import EditActivityScreen from '../Screens/EditActivityScreen';
-import MyActivities from '../Screens/MyActivities';
+import CreatedActivities from '../Screens/CreatedActivities';
+import SubscribedActivities from '../Screens/SubscribedActivities';
 import ProfileScreen from '../Screens/ProfileScreen';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -15,9 +16,14 @@ export default function ProfileStackNavigation() {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="my-activities"
-        component={MyActivities}
-        options={{ headerTitle: 'Mis actividades' }}
+        name="created-activities"
+        component={CreatedActivities}
+        options={{ headerTitle: 'Actividades Creadas' }}
+      />
+      <Stack.Screen
+        name="subscribed-activities"
+        component={SubscribedActivities}
+        options={{ headerTitle: 'Actividades Suscritas' }}
       />
       <Stack.Screen
         name="activity-details"
